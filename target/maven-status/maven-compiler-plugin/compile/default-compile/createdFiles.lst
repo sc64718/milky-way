@@ -1,3 +1,10 @@
+com\milkyway\communication\DatabaseConnector.class
+com\milkyway\model\Response.class
+com\milkyway\model\Greeting.class
+com\milkyway\validator\RequestValidator.class
+com\milkyway\dao\UserRegistrationDAO$UserRowMapper.class
 com\milkyway\Application.class
 com\milkyway\controller\GreetingController.class
-com\milkyway\model\Greeting.class
+com\milkyway\controller\UserRegistrationController.class
+com\milkyway\dao\UserRegistrationDAO.class
+com\milkyway\model\User.class
