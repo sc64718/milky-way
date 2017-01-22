@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.milkyway.dao.UserRegistrationDAO;
 import com.milkyway.model.Response;
+import com.milkyway.utils.EmailSender;
 import com.milkyway.validator.RequestValidator;
 
 @SpringBootApplication
@@ -24,6 +25,11 @@ public class Application {
 	@Bean
 	public UserRegistrationDAO userRegistrationDAO(){
 		return new UserRegistrationDAO();
+	}
+	
+	@Bean
+	public EmailSender emailSender(){
+		return new EmailSender();
 	}
 
     public static void main(String[] args) {

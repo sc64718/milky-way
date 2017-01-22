@@ -30,10 +30,10 @@ public class UserRegistrationDAO {
 	}
 
 	public void addUser(final User userRequest) {
-		final String insertSql = "insert into user(first_name,last_name,mobile_no,email,user_type) values(?,?,?,?,?)";
+		final String insertSql = "insert into user(first_name,last_name,mobile_no,email) values(?,?,?,?)";
 		// define query arguments
 		        Object[] params = new Object[] { userRequest.getFirstName(), userRequest.getLastName(),
-		        		userRequest.getMobileNumber(),userRequest.getEmail(), userRequest.getUserType() };
+		        		userRequest.getMobileNumber(),userRequest.getEmail()};
                 int row = jdbcTemplate.update(insertSql, params);
                 System.out.println("RowNum-->" +row);
 	}

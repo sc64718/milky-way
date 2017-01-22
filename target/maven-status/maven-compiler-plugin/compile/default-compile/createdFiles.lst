@@ -1,6 +1,7 @@
 com\milkyway\communication\DatabaseConnector.class
 com\milkyway\model\Response.class
 com\milkyway\model\Greeting.class
+com\milkyway\utils\EmailSender.class
 com\milkyway\validator\RequestValidator.class
 com\milkyway\dao\UserRegistrationDAO$UserRowMapper.class
 com\milkyway\Application.class

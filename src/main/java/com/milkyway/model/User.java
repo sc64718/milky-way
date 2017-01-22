@@ -7,15 +7,13 @@ public class User {
     private String lastName;
     private String mobileNumber;
     private String email;
-    private String userType;
     
    
-    public User(String firstName, String lastName, String mobileNumber, String email, String userType ) {
+    public User(String firstName, String lastName, String mobileNumber, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.mobileNumber = mobileNumber;
         this.email = email;
-        this.userType = userType; 
     }
    
     public User() {
@@ -37,7 +35,4 @@ public class User {
 	public String getEmail() {
 		return email;
 	}
-	public String getUserType() {
-		return userType;
-	}  
 }
