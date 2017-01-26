@@ -17,8 +17,8 @@ public class EmailSender {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mail, true);
             helper.setTo(toEmail);
-            helper.setReplyTo("milkyway@gmail.com");
-            helper.setFrom("milkyway@gmail.com");
+            //helper.setReplyTo("milkyway@gmail.com");
+            helper.setFrom("chatsaurabh4@gmail.com");
             helper.setSubject("Test Email");
             helper.setText("Welcome to Milkyway");
         } catch (MessagingException e) {

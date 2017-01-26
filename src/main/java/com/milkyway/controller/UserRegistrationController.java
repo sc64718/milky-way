@@ -34,9 +34,10 @@ public class UserRegistrationController {
 		Response response = new Response();
 		
 		boolean validRequest = validator.validateRequest(userRequest,response);
-
+		
 		if (validRequest) {
-
+			boolean mobileNotYetRegistered = registrationDAO.findByMobileNo(userRequest.getMobileNumber());
+            if(mobileNotYetRegistered) {
 			User user = new User(userRequest.getFirstName(),
 					userRequest.getLastName(), userRequest.getMobileNumber(),
 					userRequest.getEmail());
@@ -48,11 +49,16 @@ public class UserRegistrationController {
 			emailSender.send(userRequest.getEmail());
 
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
-
+            }
+            else {
+            	response.setResponse_status("fail");
+    			response.setResponse_desc("Mobile number already registered with us!!");
+    			return new ResponseEntity<Response>(response,
+    					HttpStatus.BAD_REQUEST);
+            }
 		}
 
 		else {
-
 			response.setResponse_status("fail");
 			return new ResponseEntity<Response>(response,
 					HttpStatus.BAD_REQUEST);

@@ -3,6 +3,7 @@ package com.milkyway.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,6 +48,15 @@ public class UserRegistrationDAO {
 			user.setEmail(rs.getString("email"));*/
 			return user;
 		}
+	}
+
+	public boolean findByMobileNo(String mobileNumber) {
+		String queryCheck = "SELECT * from user WHERE mobile_no = '" + mobileNumber + "'";
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(queryCheck);
+        if(rows.size()>0) {
+        	return false;
+        }
+		return true;
 	}
 
 }
