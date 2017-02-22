@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class Response {
 	
 	private String response_status;
-    private String response_object;
+    private Object response_object;
     private String response_desc;
 	private List<?> response_list;
     
@@ -18,7 +18,7 @@ public class Response {
 	public String getResponse_status() {
 		return response_status;
 	}
-	public String getResponse_object() {
+	public Object getResponse_object() {
 		return response_object;
 	}
 	public List<?> getResponse_list() {
@@ -27,7 +27,7 @@ public class Response {
 	public void setResponse_status(String response_status) {
 		this.response_status = response_status;
 	}
-	public void setResponse_object(String response_object) {
+	public void setResponse_object(Object response_object) {
 		this.response_object = response_object;
 	}
 	public void setResponse_list(List<?> response_list) {

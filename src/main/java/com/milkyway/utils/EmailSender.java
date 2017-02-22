@@ -12,15 +12,15 @@ public class EmailSender {
 	@Autowired
     private JavaMailSender javaMailSender;
 	
-	public void send(String toEmail) {
+	public void send(String toEmail, String passCode) {
         MimeMessage mail = javaMailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mail, true);
             helper.setTo(toEmail);
             //helper.setReplyTo("milkyway@gmail.com");
             helper.setFrom("chatsaurabh4@gmail.com");
-            helper.setSubject("Test Email");
-            helper.setText("Welcome to Milkyway");
+            helper.setSubject("Your Milkyway account details");
+            helper.setText("Welcome to Milkyway. Your login pin is " +passCode);
         } catch (MessagingException e) {
             e.printStackTrace();
         } finally {}

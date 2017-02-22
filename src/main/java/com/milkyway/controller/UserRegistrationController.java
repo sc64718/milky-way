@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.milkyway.dao.UserRegistrationDAO;
+import com.milkyway.dao.UserDAO;
 import com.milkyway.model.Response;
 import com.milkyway.model.User;
 import com.milkyway.utils.EmailSender;
@@ -21,38 +21,54 @@ public class UserRegistrationController {
 	@Autowired
 	private RequestValidator validator;
 	@Autowired
-	private UserRegistrationDAO registrationDAO;
+	private UserDAO registrationDAO;
 	@Autowired
 	private EmailSender emailSender;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Response> register(@RequestBody User userRequest) {
 		System.out.println("Inside User Registration");
-		if (userRequest == null)
-			System.out.println("No User details");
-
 		Response response = new Response();
+		
+		if (userRequest == null){
+			System.out.println("No User details");
+			response.setResponse_status("fail");
+			return new ResponseEntity<Response>(response,
+					HttpStatus.BAD_REQUEST);
+		}
+			
+		
+		
 		
 		boolean validRequest = validator.validateRequest(userRequest,response);
 		
 		if (validRequest) {
 			boolean mobileNotYetRegistered = registrationDAO.findByMobileNo(userRequest.getMobileNumber());
             if(mobileNotYetRegistered) {
+            	//generate a 4 digit integer 1000 <10000
+    	    int randomPIN = (int)(Math.random()*9000)+1000;
+    	    String PINString = String.valueOf(randomPIN);
 			User user = new User(userRequest.getFirstName(),
 					userRequest.getLastName(), userRequest.getMobileNumber(),
-					userRequest.getEmail());
-
-			registrationDAO.addUser(user);
-            
-			response.setResponse_status("success");
-			
-			emailSender.send(userRequest.getEmail());
-
+					userRequest.getEmail(),PINString);
+			System.out.println("Passcode is " +PINString);
+			Long userId = registrationDAO.addUser(user);
+            System.out.println("User ID is " +userId);			
+			try {
+			//emailSender.send(userRequest.getEmail(),PINString);
+			//send SMS
+			} catch (Exception ex) {
+				System.out.println("Exception while sending email to " +userRequest.getEmail());
+				ex.printStackTrace();
+			} 
+			response.setResponse_status("success");	
+			response.setResponse_desc("User ID is "+userId);	
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
+	
             }
             else {
             	response.setResponse_status("fail");
-    			response.setResponse_desc("Mobile number already registered with us!!");
+    			response.setResponse_desc("Mobile number already registered with us");
     			return new ResponseEntity<Response>(response,
     					HttpStatus.BAD_REQUEST);
             }
