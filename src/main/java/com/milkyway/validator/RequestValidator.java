@@ -1,15 +1,15 @@
 package com.milkyway.validator;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 
 import com.milkyway.model.Response;
-import com.milkyway.model.User;
-import org.apache.commons.validator.routines.EmailValidator;
+import com.milkyway.model.UserDetails;
 
 public class RequestValidator {
 
 
-	public boolean validateRequest(User request, Response response) {
+	public boolean validateRequest(UserDetails request, Response response) {
 
 		if (request.getFirstName() == null && "".equalsIgnoreCase(request.getFirstName())) {
 			response.setResponse_desc("Invalid First Name");

@@ -6,11 +6,25 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class Subscription {
 	private long subscriptionId;
 	private long userId;
-	private long subscribedItemId;
 	private long subscribedQty;
 	private long tempModifiedQty;
 	private String subscribedQtyUnit;
-    private SubscribedItem subscribedItem;
+	private long subscribedItemId;
+	private String subscribedItemName;
+	private String subscribedItemUnit;
+
+	public String getSubscribedItemName() {
+		return subscribedItemName;
+	}
+	public void setSubscribedItemName(String subscribedItemName) {
+		this.subscribedItemName = subscribedItemName;
+	}
+	public String getSubscribedItemUnit() {
+		return subscribedItemUnit;
+	}
+	public void setSubscribedItemUnit(String subscribedItemUnit) {
+		this.subscribedItemUnit = subscribedItemUnit;
+	}
     
 	public long getSubscriptionId() {
 		return subscriptionId;
@@ -42,12 +56,7 @@ public class Subscription {
 	public void setSubscribedQtyUnit(String subscribedQtyUnit) {
 		this.subscribedQtyUnit = subscribedQtyUnit;
 	}
-	public SubscribedItem getSubscribedItem() {
-		return subscribedItem;
-	}
-	public void setSubscribedItem(SubscribedItem subscribedItem) {
-		this.subscribedItem = subscribedItem;
-	}
+
 	public long getTempModifiedQty() {
 		return tempModifiedQty;
 	}

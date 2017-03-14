@@ -1,10 +1,10 @@
 package com.milkyway.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,19 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.milkyway.dao.UserDAO;
 import com.milkyway.model.Response;
-import com.milkyway.model.User;
-import com.milkyway.validator.RequestValidator;
+import com.milkyway.model.Subscription;
+import com.milkyway.model.UserDetails;
+import com.milkyway.model.UserSubscription;
 
 @RestController
 public class LoginController {
 
 	@Autowired
-	private RequestValidator validator;
-	@Autowired
 	private UserDAO userDAO;
 
-	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Response> login(@RequestBody User userRequest) {
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public ResponseEntity<Response> login(@RequestBody UserDetails userRequest) {
 		System.out.println("Inside User Login");
 	    Response response = new Response();
 	    
@@ -40,20 +39,28 @@ public class LoginController {
 			
 			if(validateUserPasscode) {
 				
-				List<User> userSubscriptionList = userDAO.getUserSubscription(userRequest.getUserId());
-				response.setResponse_status("success");
-				if(userSubscriptionList!=null && userSubscriptionList.size()==1){
-					response.setResponse_object(userSubscriptionList.get(0));					
-				} else {
-					response.setResponse_list(userSubscriptionList);
-				}
-				return new ResponseEntity<Response>(response, HttpStatus.OK);
+				List<UserSubscription> userSubscriptionList = userDAO.getUserSubscription(userRequest.getUserId());
 				
+				if(userSubscriptionList!=null && userSubscriptionList.size()>0){				
+					response.setResponse_status("success");
+					response.setResponse_object(userSubscriptionList.get(0).getUserDetails());
+					
+					List<Subscription> subsListForResponse = new ArrayList<Subscription>();
+					
+					for (UserSubscription subs:userSubscriptionList){
+						subsListForResponse.add(subs.getSubscription());
+					}
+					response.setResponse_list(subsListForResponse);
+					return new ResponseEntity<Response>(response, HttpStatus.OK);
+					} else {
+				response.setResponse_status("fail");
+				response.setResponse_desc("No user subscriptions");
+				return new ResponseEntity<Response>(response, HttpStatus.OK);
+				}		
 			} else {          
 			response.setResponse_status("fail");
 			response.setResponse_desc("Your passcode is not valid");
-			return new ResponseEntity<Response>(response, HttpStatus.NOT_ACCEPTABLE);
+			return new ResponseEntity<Response>(response, HttpStatus.UNAUTHORIZED);
 			}
-
 	}
 	}

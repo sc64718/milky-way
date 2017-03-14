@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.milkyway.model.Subscription;
+import com.milkyway.utils.DateUtils;
 
 @Repository
 public class SubscriptionDAO {
@@ -33,7 +34,7 @@ public class SubscriptionDAO {
 					Connection connection) throws SQLException {
 				PreparedStatement ps = connection.prepareStatement(insertSql,
 						Statement.RETURN_GENERATED_KEYS);
-				ps.setTimestamp(1, getCurrentJavaSqlTimestamp());
+				ps.setTimestamp(1, DateUtils.getCurrentJavaSqlTimestamp());
 				ps.setLong(2, subscriptionChangeRequest.getUserId());
 				ps.setLong(3, subscriptionChangeRequest.getSubscriptionId());
 				ps.setLong(4, subscriptionChangeRequest.getTempModifiedQty());
@@ -45,8 +46,4 @@ public class SubscriptionDAO {
 		return newChangeRequestId;
 	}
 
-	 public static java.sql.Timestamp getCurrentJavaSqlTimestamp() {
-		    java.util.Date date = new java.util.Date();
-		    return new java.sql.Timestamp(date.getTime());
-		  }
 }

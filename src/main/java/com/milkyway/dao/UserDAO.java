@@ -17,9 +17,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.milkyway.model.SubscribedItem;
 import com.milkyway.model.Subscription;
-import com.milkyway.model.User;
+import com.milkyway.model.UserDetails;
+import com.milkyway.model.UserSubscription;
+import com.milkyway.model.UserVacations;
+import com.milkyway.utils.DateUtils;
 
 @Repository
 public class UserDAO {
@@ -28,40 +30,32 @@ public class UserDAO {
 	private JdbcTemplate jdbcTemplate;
 
 	@Transactional(readOnly = true)
-	public List<User> findAll() {
+	public List<UserDetails> findAll() {
 		return jdbcTemplate.query("select * from user", new UserRowMapper());
 	}
 
 	@Transactional(readOnly = true)
-	public User findUserById(long userId) {
+	public UserDetails findUserById(long userId) {
 		return jdbcTemplate.queryForObject(
 				"select * from user where user_id=?", new Object[] { userId },
 				new UserRowMapper());
 	}
 
 	@Transactional(readOnly = true)
-	public List<User> getUserSubscription(long userId) {
+	public List<UserSubscription> getUserSubscription(long userId) {
 		final String getUserSubSql = "select user.first_name as first_name,user.last_name as last_name,"
 				+ "user.mobile_no as mobile_no,user.email as email,subscription.subscribed_qty as subscribed_qty,"
 				+ "subscription.subscription_id as subscription_id,subscription.subscribed_item_id as subscribed_item_id,"
 				+ "(select subscribed_item_name from subscribed_item_m where subscribed_item_id = subscription.subscribed_item_id) as subscribed_item_name"
-				+ " from user,subscription where user.user_id= " + userId + "";
+				+ " from user,subscription where subscription.user_id= user.user_id and user.user_id= " + userId + "";
 		UserSubscriptionRowMapper userSubsMapper = new UserSubscriptionRowMapper();
 		return jdbcTemplate.query(getUserSubSql, userSubsMapper);
 		 
 	}
 
-	public Long addUser(final User userRequest) {
+	public Long addUser(final UserDetails userRequest) {
 		KeyHolder holder = new GeneratedKeyHolder();
 		final String insertSql = "insert into user(first_name,last_name,mobile_no,email,passcode) values(?,?,?,?,?)";
-		/*
-		 * // define query arguments Object[] params = new Object[] {
-		 * userRequest.getFirstName(), userRequest.getLastName(),
-		 * userRequest.getMobileNumber
-		 * (),userRequest.getEmail(),userRequest.getPassCode()}; int row =
-		 * jdbcTemplate.update(insertSql, params);
-		 * System.out.println("RowNum-->" +row);
-		 */
 		jdbcTemplate.update(new PreparedStatementCreator() {
 
 			@Override
@@ -81,40 +75,62 @@ public class UserDAO {
 		Long newUserId = holder.getKey().longValue();
 		return newUserId;
 	}
+	
+	public void addUserVacations(final UserVacations userVacations) {
+		final String insertSql = "insert into user_vacations(user_id,from_date,to_date,request_date) values(?,?,?,?)";
+		jdbcTemplate.update(new PreparedStatementCreator() {
 
-	class UserRowMapper implements RowMapper<User> {
+			@Override
+			public PreparedStatement createPreparedStatement(
+					Connection connection) throws SQLException {
+				PreparedStatement ps = connection.prepareStatement(insertSql);
+				ps.setLong(1, userVacations.getUserId());
+				ps.setDate(2, userVacations.getFromDate());
+				ps.setDate(3, userVacations.getToDate());
+				ps.setTimestamp(4, DateUtils.getCurrentJavaSqlTimestamp());
+
+				return ps;
+			}
+		});
+	}
+
+	class UserRowMapper implements RowMapper<UserDetails> {
 		@Override
-		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-			User user = new User();
-			user.setUserId(rs.getLong("user_id"));
-			user.setFirstName(rs.getString("first_name"));
-			user.setLastName(rs.getString("last_name"));
-			user.setMobileNumber(rs.getString("mobile_no"));
-			user.setEmail(rs.getString("email"));
-			user.setPassCode(rs.getString("passcode"));
-			return user;
+		public UserDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
+			UserDetails userDetails = new UserDetails();
+			userDetails.setUserId(rs.getLong("user_id"));
+			userDetails.setFirstName(rs.getString("first_name"));
+			userDetails.setLastName(rs.getString("last_name"));
+			userDetails.setMobileNumber(rs.getString("mobile_no"));
+			userDetails.setEmail(rs.getString("email"));
+			userDetails.setPassCode(rs.getString("passcode"));
+			return userDetails;
 		}
 	}
 
-	class UserSubscriptionRowMapper implements RowMapper<User> {
+	class UserSubscriptionRowMapper implements RowMapper<UserSubscription> {
 
 		@Override
-		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-			User user = new User();
-			user.setFirstName(rs.getString("first_name"));
-			user.setLastName(rs.getString("last_name"));
-			user.setMobileNumber(rs.getString("mobile_no"));
-			user.setEmail(rs.getString("email"));
+		public UserSubscription mapRow(ResultSet rs, int rowNum) throws SQLException {
+			UserSubscription userSubscription = new UserSubscription();
+			
+			UserDetails userDetails = new UserDetails();
+			userDetails.setFirstName(rs.getString("first_name"));
+			userDetails.setLastName(rs.getString("last_name"));
+			userDetails.setMobileNumber(rs.getString("mobile_no"));
+			userDetails.setEmail(rs.getString("email"));
+			
 			Subscription subscription = new Subscription();
-			SubscribedItem subscribedItem = new SubscribedItem();
 			subscription.setSubscriptionId(rs.getLong("subscription_id"));
 			subscription.setSubscribedQty(rs.getLong("subscribed_qty"));
-			subscribedItem.setSubscribedItemId(rs.getLong("subscribed_item_id"));
-			subscribedItem.setSubscribedItemName(rs
+			
+			subscription.setSubscribedItemName(rs
 					.getString("subscribed_item_name"));
-			subscription.setSubscribedItem(subscribedItem);
-			user.setSubscription(subscription);
-			return user;
+					
+			userSubscription.setSubscription(subscription);
+			userSubscription.setUserDetails(userDetails);
+			
+			return userSubscription;
 		}
 
 	}
@@ -138,10 +154,10 @@ public class UserDAO {
 	}
 
 	public boolean validateUserPasscode(long userId, String passCode) {
-		User user = findUserById(userId);
-		System.out.println("UserId is " + user.getUserId());
-		System.out.println("UserName is " + user.getFirstName());
-		if (user.getPassCode().equalsIgnoreCase(passCode)) {
+		UserDetails userDetails = findUserById(userId);
+		System.out.println("UserId is " + userDetails.getUserId());
+		System.out.println("UserName is " + userDetails.getFirstName());
+		if (userDetails.getPassCode().equalsIgnoreCase(passCode)) {
 			System.out.println("Passcode matches");
 			return true;
 		}

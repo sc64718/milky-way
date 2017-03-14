@@ -1,12 +1,14 @@
+com\milkyway\controller\PlanVacationController.class
 com\milkyway\communication\DatabaseConnector.class
 com\milkyway\controller\ChangeRequestController.class
 com\milkyway\dao\UserDAO$UserRowMapper.class
 com\milkyway\model\Greeting.class
 com\milkyway\dao\UserDAO.class
+com\milkyway\model\UserDetails.class
 com\milkyway\Application.class
 com\milkyway\controller\GreetingController.class
 com\milkyway\controller\LoginController.class
-com\milkyway\model\User.class
+com\milkyway\model\UserSubscription.class
 com\milkyway\dao\SubscriptionDAO.class
 com\milkyway\dao\UserDAO$1.class
 com\milkyway\model\Response.class
@@ -14,6 +16,8 @@ com\milkyway\utils\EmailSender.class
 com\milkyway\validator\RequestValidator.class
 com\milkyway\dao\UserDAO$UserSubscriptionRowMapper.class
 com\milkyway\model\Subscription.class
+com\milkyway\utils\DateUtils.class
 com\milkyway\dao\SubscriptionDAO$1.class
+com\milkyway\dao\UserDAO$2.class
 com\milkyway\controller\UserRegistrationController.class
-com\milkyway\model\SubscribedItem.class
+com\milkyway\model\UserVacations.class

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.milkyway.dao.UserDAO;
 import com.milkyway.model.Response;
-import com.milkyway.model.User;
+import com.milkyway.model.UserDetails;
 import com.milkyway.utils.EmailSender;
 import com.milkyway.validator.RequestValidator;
 
@@ -26,7 +26,7 @@ public class UserRegistrationController {
 	private EmailSender emailSender;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Response> register(@RequestBody User userRequest) {
+	public ResponseEntity<Response> register(@RequestBody UserDetails userRequest) {
 		System.out.println("Inside User Registration");
 		Response response = new Response();
 		
@@ -35,10 +35,7 @@ public class UserRegistrationController {
 			response.setResponse_status("fail");
 			return new ResponseEntity<Response>(response,
 					HttpStatus.BAD_REQUEST);
-		}
-			
-		
-		
+		}		
 		
 		boolean validRequest = validator.validateRequest(userRequest,response);
 		
@@ -48,11 +45,11 @@ public class UserRegistrationController {
             	//generate a 4 digit integer 1000 <10000
     	    int randomPIN = (int)(Math.random()*9000)+1000;
     	    String PINString = String.valueOf(randomPIN);
-			User user = new User(userRequest.getFirstName(),
+			UserDetails userDetails = new UserDetails(userRequest.getFirstName(),
 					userRequest.getLastName(), userRequest.getMobileNumber(),
 					userRequest.getEmail(),PINString);
 			System.out.println("Passcode is " +PINString);
-			Long userId = registrationDAO.addUser(user);
+			Long userId = registrationDAO.addUser(userDetails);
             System.out.println("User ID is " +userId);			
 			try {
 			//emailSender.send(userRequest.getEmail(),PINString);
